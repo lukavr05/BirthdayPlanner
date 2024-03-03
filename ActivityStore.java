@@ -49,8 +49,9 @@ class ActivityStore {
             br = new BufferedReader(new FileReader(filename));
             // activity string is contained in the line of the txt file
             String activity = br.readLine();
-            // while there are still files to read
+            // while there are still lines to read
             while (activity != null) {
+                prefix = Math.min(activity.length(), prefix); 
                 for (int x = 0 ; x < prefix ; x++) {
                     String key = activity.substring(0,x + 1);
                     if (filename.equals("cafes.txt") || filename.equals("restaurants.txt")) {

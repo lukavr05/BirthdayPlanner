@@ -7,4 +7,6 @@ class CafeStore extends ActivityStore{
     CafeStore(int prefix) throws IOException {
         super("cafes.txt", prefix);
     }
+
+    // use override method maybe
 }

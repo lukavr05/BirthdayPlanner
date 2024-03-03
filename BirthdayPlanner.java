@@ -16,66 +16,80 @@ class BirthdayPlanner {
         this.prefix = prefix;
     }
 
+    public String capitalisePrefix(String s, int prefix) {
+        s = s.substring(0,prefix) + s.substring(prefix);
+        return s;
+    }
+
     public List<String> generate(String input) {
         boolean mainLast = false;
         boolean eatingLast = false;
         boolean hasRestaurant = false;
         boolean mainDouble = false;
-        boolean added = false;
 
         List<String> list = new ArrayList<String>();
         Random rand = new Random();
 
-        if (rand.nextBoolean()) {
-            list.add(cafes.getRandomItem(input.substring(0,1)));
-            eatingLast = true;
-        } else {
-            list.add(mains.getRandomItem(input.substring(0,1)));
-            mainLast = true;
-        }
-
-            // choose one part of the string randopmly as the key
-            int prefixLength = Math.min(rand.nextInt(prefix) + 1, input.length())
-            String s = input.substring(0,prefixLength);
-            while() {
-            boolean chooseMain = rand.nextBoolean();
+        // choose one part of the string randopmly as the key
+            
+        while (input.length() > 0) {
+            boolean added = false;
+            int prefixLength = Math.min(rand.nextInt(prefix) + 1, input.length());
             String activity = null;
-            // generating either cafe or main
-            if (chooseMain || eatingLast) {
-                if (mainLast && !mainDouble) {
-                    activity = mains.getRandomItem(s);
-                    eatingLast = false;
-                    mainLast = true;
-                    mainDouble = true;
-                } else if (eatingLast) {
-                    activity = mains.getRandomItem(s);
-                    eatingLast = false;
-                    mainLast = true;
-                    mainDouble = false;
+            while (!added) {
+                String s = input.substring(0,prefixLength);
+                boolean chooseMain = rand.nextBoolean();
+                // generating either cafe or main
+                if (chooseMain || eatingLast) {
+                    if (mainLast && !mainDouble) {
+                        activity = mains.getRandomItem(s);
+                        eatingLast = false;
+                        mainLast = true;
+                        mainDouble = true;
+                    } else if (eatingLast) {
+                        activity = mains.getRandomItem(s);
+                        eatingLast = false;
+                        mainLast = true;
+                        mainDouble = false;
+                    } else {
+                        activity = cafes.getRandomItem(s);
+                        eatingLast = true;
+                        mainLast = false;
+                        mainDouble = false;
+                    }
                 } else {
-                    activity = cafes.getRandomItem(s);
-                    eatingLast = true;
-                    mainLast = false;
-                    mainDouble = false;
+                    if (!hasRestaurant && rand.nextBoolean()) {
+                        activity = restaurants.getRandomItem(s);
+                        eatingLast = true;
+                        mainLast = false;
+                        hasRestaurant = true;
+                    } else {
+                        activity = cafes.getRandomItem(s);
+                        eatingLast = true;
+                        mainLast = false;
+                    }
                 }
-            } else {
-                if (!hasRestaurant && rand.nextBoolean()) {
-                    activity = restaurants.getRandomItem(s);
-                    eatingLast = true;
-                    mainLast = false;
-                    hasRestaurant = true;
+                // if we dont have an item that matches then decrement the prefix and make sure to set added to false
+                if (activity == null) {
+                    prefixLength--;
+                    added = false;
                 } else {
-                    activity = cafes.getRandomItem(s);
-                    eatingLast = true;
-                    mainLast = false;
+                    list.add(capitalisePrefix(activity, prefixLength));
+                    input = input.substring(prefixLength);
+                    added = true;
                 }
             }
-            if (activity != null) {
-                list.add(activity);
-                break;
-            }
+
         }
         return list;
+    }
+
+    public String toString(List<String> list) {
+        String s = "";
+        for (String item : list) {
+            s += item + "\n";
+        }
+        return s;
     }
 
     public static void main(String[] args) throws IOException{
@@ -84,10 +98,7 @@ class BirthdayPlanner {
 
         BirthdayPlanner bp = new BirthdayPlanner(prefix);
         List<String> list = bp.generate(input);
-
-        for (String item : list) {
-            item = item.substring(0,1).toUpperCase() + item.substring(1);
-            System.out.println(item);
-        }
+        
+        System.out.print(bp.toString(list));
     }
 }
