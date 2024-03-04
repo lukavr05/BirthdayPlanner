@@ -7,7 +7,7 @@ import java.io.IOException;
 
 class ActivityStore {
     // mapping each string key to an array containing all the activities
-    private HashMap<String, ArrayList<String>> hash;
+    protected HashMap<String, ArrayList<String>> hash;
 
     ActivityStore() {
         hash = new HashMap<String, ArrayList<String>>();
@@ -25,17 +25,14 @@ class ActivityStore {
             while (activity != null) {
                 // extract first char for key
                 String key = activity.substring(0,1);
-                if (filename.equals("cafes.txt") || filename.equals("restaurants.txt")) {
-                    String type = " (" + filename.substring(0,filename.length() - 5) +")";
-                    this.add(key, activity + type);
-                } else {
-                    this.add(key, activity);
-                }
+                this.add(key, activity);
+        
                 // next activity
                 activity = br.readLine();
             }
             // close buffered reader
             br.close();
+            
         } catch (IOException e) {
             System.err.print("Error! File does not exist!");
         }
@@ -51,15 +48,11 @@ class ActivityStore {
             String activity = br.readLine();
             // while there are still lines to read
             while (activity != null) {
+                // we cannot have prefix longer than activity
                 prefix = Math.min(activity.length(), prefix); 
                 for (int x = 0 ; x < prefix ; x++) {
                     String key = activity.substring(0,x + 1);
-                    if (filename.equals("cafes.txt") || filename.equals("restaurants.txt")) {
-                        String type = " (" + filename.substring(0,filename.length() - 5) +")";
-                        this.add(key, activity + type);
-                    } else {
-                        this.add(key, activity);
-                    }
+                    this.add(key, activity);    
                 }
                 // next activity
                 activity = br.readLine();
@@ -75,7 +68,7 @@ class ActivityStore {
         return this.hash;
     }
 
-    public void add(String key, String item){
+    protected void add(String key, String item){
         // ensure key is uppercase
         key = key.toUpperCase();
 
